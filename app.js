@@ -15,11 +15,13 @@ app.listen(8000, () => {
 })
 
 app.get('/', (req, res) => {
-  res.send('public messages')
-})
-
-app.get('/convos', (req, res) => {
-  res.send('your conversations')
+  res.send(`<h2>Hi welcome</h2> <br/>
+  Select from the following: <br/>
+  /echo <br/>
+  /queryViewer <br/>
+  /sum <br/>
+  /cipher <br/>
+  `)
 })
 
 app.get('/echo', (req, res) => {
@@ -40,7 +42,6 @@ app.get('/echo', (req, res) => {
 })
 
 app.get('/queryViewer', (req, res) => {
-  // console.log(req.query)
 
   const name = req.query.name;
   const race = req.query.race;
@@ -95,4 +96,50 @@ app.get('/cipher', (req, res) => {
   })
 
   res.send(newText.join(''))
+})
+
+app.get('/lotto', (req, res) => {
+  const {numbers} = req.query;
+  console.log(numbers.length)
+  if (numbers.length <= 0 || numbers.length > 6) {
+    res.status(400).send('add your 6 lotto numbers, beginning each with "numbers="')
+  }
+
+  function generateLotto() {
+    return  Array(6).fill(1).map(i => Math.round(Math.random() * 20));
+  }
+
+  function compare() {
+    const lotto = generateLotto();
+    const guess = numbers.map(n => parseInt(n, 10));
+    console.log("lotto", lotto);
+    console.log("your numbers", guess);
+    let score = lotto.filter(n => guess.includes(n));
+    return score
+
+  }
+
+  function returnMessage() {
+    let score = compare();
+    let message;
+    switch(score.length) {
+      case 6:
+        message = `score: ${score.length} you win mega`;
+        break;
+      case 5:
+        message = `score: ${score.length} you win $100`;
+        break;
+      case 4:
+        message = `score: ${score.length} you win a free ticket`;
+        break;
+      default:
+        message = `score: ${score.length} you lose`;
+        break;
+    }
+    return message;
+  }
+  const finalMessage = returnMessage();
+  //res.end()
+  res.send(finalMessage)
+
 })
