@@ -72,3 +72,27 @@ app.get('/sum', (req, res) => {
   }
   res.status(400).send('Set a and b values with numbers')
 })
+
+app.get('/cipher', (req, res) => {
+  const text = req.query.text;
+  const shift = req.query.shift;
+
+  if(!text || !shift) {
+    return res.status(400).send('missing text or shift field')
+  }
+
+  if(shift && isNaN(parseInt(shift))) {
+    return res.status(400).send('shift field must be a number')
+  }
+  const textArr = text.toLowerCase().split('');
+  const newText = textArr.map(letter => {
+
+    let newCharCode = letter.charCodeAt(0) + parseInt(shift, 10)
+    const charNum =  newCharCode >= 122
+      ? (newCharCode - 122) + 96
+      : newCharCode
+    return String.fromCharCode(charNum)
+  })
+
+  res.send(newText.join(''))
+})
